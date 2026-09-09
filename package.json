@@ -9,15 +9,18 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/index.ts",
+    "test": "npm run build && node --test test/gateway.integration.test.cjs"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
-    "typescript": "^5.7.2",
-    "ts-node": "^10.9.2",
     "@types/express": "^5.0.0",
-    "@types/node": "^22.10.2"
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.10.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
   }
 }
