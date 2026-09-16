@@ -10,6 +10,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
+    "lint": "eslint .",
     "test": "npm run build && node --test test/gateway.integration.test.cjs"
   },
   "dependencies": {
@@ -17,10 +18,14 @@
     "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.10.2",
+    "eslint": "^10.10.0",
+    "globals": "^17.12.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.70.0"
   }
 }

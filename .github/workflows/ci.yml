@@ -20,8 +20,10 @@ jobs:
           node-version: "24"
 
       - run: npm ci
+      - run: npm run lint
       - run: npm run build
       - run: npm test
+      - run: npm audit --audit-level=critical
 
   build-tag-push:
     needs: build-test
