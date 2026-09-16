@@ -3,6 +3,7 @@ import express, { type RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 
 const app = express();
+const unusedVerificationVar = "TIE-20 deliberate lint failure — verifying the CI gate stops the pipeline";
 const port = process.env.PORT ?? 3000;
 const deployServiceUrl = process.env.DEPLOY_SERVICE_URL ?? "http://deploy-service:3001";
 const logServiceUrl = process.env.LOG_SERVICE_URL ?? "http://log-service:3002";
