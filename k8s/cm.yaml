@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-gateway-cm
+  namespace: deploy-status-checker
+data:
+  PORT: "3000"
+  DEPLOY_SERVICE_URL: "http://deploy-service:3001"
+  LOG_SERVICE_URL: "http://log-service:3002"
