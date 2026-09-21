@@ -4,8 +4,9 @@ metadata:
   name: api-gateway
   namespace: deploy-status-checker
 spec:
+  type: LoadBalancer
   selector:
     app: api-gateway
   ports:
-    - port: 3000
+    - port: 80
       targetPort: 3000
