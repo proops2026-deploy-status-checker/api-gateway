@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: 241533152550.dkr.ecr.us-west-2.amazonaws.com/api-gateway:v1
+          image: tert62/dsc-api-gateway:eff7380
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
