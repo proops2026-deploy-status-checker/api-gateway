@@ -118,7 +118,7 @@ app.get("/health", (_req, res) => {
 
 // Deploy Service routes.
 app.post("/deploys", requireApiKey, proxyTo(deployServiceUrl, defaultUpstreamTimeoutMs));
-app.patch("/deploys", requireApiKey, proxyTo(deployServiceUrl, defaultUpstreamTimeoutMs));
+app.patch("/deploys/:id", requireApiKey, proxyTo(deployServiceUrl, defaultUpstreamTimeoutMs));
 app.get("/deploys", requireJwt, proxyTo(deployServiceUrl, defaultUpstreamTimeoutMs));
 app.get("/deploys/:id", requireJwt, proxyTo(deployServiceUrl, defaultUpstreamTimeoutMs));
 app.get("/overview", requireJwt, proxyTo(deployServiceUrl, overviewTimeoutMs));

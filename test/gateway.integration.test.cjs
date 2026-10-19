@@ -86,4 +86,21 @@ test("TIE-9 authenticates and forwards the configured routes", async (t) => {
     { service: "log", method: "GET", url: "/deploys/deploy-42/logs" },
     { service: "log", method: "POST", url: "/deploys/deploy-42/logs" }
   ]);
+
+  // G4: PATCH /deploys/:id must still require the CI API key, and must actually
+  // reach the deploy service (old route had no :id, so this 404'd before auth ran).
+  assert.equal(
+    (await fetch(`${gatewayUrl}/deploys/deploy-42`, { method: "PATCH" })).status,
+    401
+  );
+  assert.equal(
+    (
+      await fetch(`${gatewayUrl}/deploys/deploy-42`, {
+        method: "PATCH",
+        headers: { "x-api-key": "test-ci-api-key" }
+      })
+    ).status,
+    200
+  );
+  assert.deepEqual(received.at(-1), { service: "deploy", method: "PATCH", url: "/deploys/deploy-42" });
 });
