@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "fakefakefake-not-real": "^1.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
