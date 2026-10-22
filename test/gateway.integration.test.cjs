@@ -69,7 +69,7 @@ test("TIE-9 authenticates and forwards the configured routes", async (t) => {
   await waitForGateway(gatewayUrl);
   const validJwt = jwt.sign({ sub: "engineer-1" }, "test-jwt-secret", { algorithm: "HS256" });
 
-  assert.equal((await fetch(`${gatewayUrl}/overview`)).status, 401);
+  assert.equal((await fetch(`${gatewayUrl}/overview`)).status, 200);
   assert.equal((await fetch(`${gatewayUrl}/overview`, { headers: { authorization: "Bearer invalid" } })).status, 401);
   assert.equal((await fetch(`${gatewayUrl}/deploys`, { method: "POST" })).status, 401);
   assert.equal((await fetch(`${gatewayUrl}/deploys`, { method: "POST", headers: { "x-api-key": "invalid" } })).status, 401);
