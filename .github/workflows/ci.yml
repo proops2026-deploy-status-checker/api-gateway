@@ -6,11 +6,14 @@ on:
   pull_request:
     branches: [master]
 
+permissions:
+  contents: read
+
 env:
   IMAGE: tert62/dsc-api-gateway
 
 jobs:
-  build-test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,12 +25,35 @@ jobs:
 
       - run: npm ci
       - run: npm run lint
-      - run: npm run build
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - run: npm ci
+      # npm test = npm run build && node --test (no separate build step)
       - run: npm test
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      # Reads package-lock.json only — no npm ci needed (verified locally, Day 24)
       - run: npm audit --audit-level=critical
 
   build-tag-push:
-    needs: build-test
+    needs: [lint, test, audit]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
