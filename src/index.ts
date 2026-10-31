@@ -8,6 +8,7 @@ const deployServiceUrl = process.env.DEPLOY_SERVICE_URL ?? "http://deploy-servic
 const logServiceUrl = process.env.LOG_SERVICE_URL ?? "http://log-service:3002";
 const defaultUpstreamTimeoutMs = 5_000;
 const overviewTimeoutMs = 2_000;
+const shutdownTimeoutMs = 10_000;
 
 app.disable("x-powered-by");
 app.use(express.json({ limit: "1mb" }));
@@ -127,6 +128,17 @@ app.get("/overview", requireJwt, proxyTo(deployServiceUrl, overviewTimeoutMs));
 app.get("/deploys/:id/logs", requireJwtOrApiKey, proxyTo(logServiceUrl, defaultUpstreamTimeoutMs));
 app.post("/deploys/:id/logs", requireJwtOrApiKey, proxyTo(logServiceUrl, defaultUpstreamTimeoutMs));
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`api-gateway listening on port ${port}`);
 });
+
+// Kubernetes sends SIGTERM before killing the Pod: stop accepting connections,
+// let in-flight requests finish, then exit cleanly (force-exit if they hang).
+function shutdown(signal: NodeJS.Signals): void {
+  console.log(`api-gateway received ${signal}, shutting down`);
+  server.close(() => process.exit(0));
+  setTimeout(() => process.exit(1), shutdownTimeoutMs).unref();
+}
+
+process.once("SIGTERM", shutdown);
+process.once("SIGINT", shutdown);

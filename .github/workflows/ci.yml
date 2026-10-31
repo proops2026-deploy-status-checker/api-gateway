@@ -37,8 +37,17 @@ jobs:
           cache: npm
 
       - run: npm ci
-      # npm test = npm run build && node --test (no separate build step)
-      - run: npm test
+      # Same tests as `npm test`, built with source maps and wrapped in c8 so
+      # coverage of the spawned gateway maps back to src/ (coverage/lcov.info)
+      - run: npm run test:coverage
+
+      # Handed to the sonar job; only needed within this run
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/lcov.info
+          if-no-files-found: error
+          retention-days: 1
 
   audit:
     runs-on: ubuntu-latest
@@ -51,6 +60,26 @@ jobs:
 
       # Reads package-lock.json only — no npm ci needed (verified locally, Day 24)
       - run: npm audit --audit-level=critical
+
+  # Runs in parallel with build-image; the ruleset (not needs:) blocks the merge
+  sonar:
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history: Sonar uses blame + the merge base with master to tell new code from old
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
+      # Reads sonar-project.properties; v8.3.0 pinned by commit SHA (third-party action)
+      - uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build-image:
     needs: [lint, test, audit]
