@@ -117,35 +117,6 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-// DRILL (Day 26): deliberately untested route to drop coverage on new code.
-app.get("/debug/info", requireJwt, (req, res) => {
-  const verbose = req.query.verbose === "true";
-  const upstreams = [
-    { name: "deploy-service", url: deployServiceUrl },
-    { name: "log-service", url: logServiceUrl }
-  ];
-
-  const info: Record<string, unknown> = {
-    service: "api-gateway",
-    uptimeSeconds: Math.round(process.uptime()),
-    upstreamCount: upstreams.length
-  };
-
-  if (verbose) {
-    info.upstreams = upstreams.map((upstream) => upstream.name);
-    info.nodeVersion = process.version;
-    info.memoryRssBytes = process.memoryUsage().rss;
-  }
-
-  if (req.query.format === "text") {
-    const lines = Object.entries(info).map(([key, value]) => `${key}=${String(value)}`);
-    res.type("text/plain").send(lines.join("\n"));
-    return;
-  }
-
-  res.json(info);
-});
-
 // Deploy Service routes.
 app.post("/deploys", requireApiKey, proxyTo(deployServiceUrl, defaultUpstreamTimeoutMs));
 app.patch("/deploys/:id", requireApiKey, proxyTo(deployServiceUrl, defaultUpstreamTimeoutMs));
