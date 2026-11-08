@@ -2,6 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import express, { type RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 
+// API gateway: auth + routing to deploy-service and log-service (CI: cicd-platform reusable-app-ci@v1)
 const app = express();
 const port = process.env.PORT ?? 3000;
 const deployServiceUrl = process.env.DEPLOY_SERVICE_URL ?? "http://deploy-service:3001";
