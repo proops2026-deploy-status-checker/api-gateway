@@ -1,0 +1,16 @@
+name: IaC PR Open — Plan
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize, reopened]
+    paths: ['iac/**']
+jobs:
+  iac-plan:
+    uses: proops2026-deploy-status-checker/proops2026-cicd-platform/.github/workflows/reusable-iac.yml@v1
+    with:
+      action: plan
+      environment: dev
+      working-directory: iac/dev
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
