@@ -1,0 +1,16 @@
+name: IaC Manual Trigger
+on:
+  workflow_dispatch:
+    inputs:
+      action: { type: choice, options: [plan, apply, destroy], default: plan }
+      environment: { type: choice, options: [dev, test, prod], default: dev } # prod: no iac/prod yet, fails fast
+jobs:
+  iac:
+    uses: proops2026-deploy-status-checker/proops2026-cicd-platform/.github/workflows/reusable-iac.yml@v1
+    with:
+      action: ${{ inputs.action }}
+      environment: ${{ inputs.environment }}
+      working-directory: iac/${{ inputs.environment }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

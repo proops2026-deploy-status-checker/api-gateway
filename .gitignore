@@ -5,3 +5,12 @@ dist/
 !.env.example
 *.log
 coverage/
+
+# Terraform (state lives in S3; lock files of env roots ARE committed)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+crash.log
+iac/modules/**/.terraform.lock.hcl
