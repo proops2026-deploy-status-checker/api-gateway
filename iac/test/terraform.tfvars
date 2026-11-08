@@ -1,0 +1,11 @@
+# Committed on purpose: no secrets here, and this file is the only diff between envs.
+prefix            = "proops"
+project           = "dsc"
+environment       = "test"
+region            = "us-west-2"
+region_code       = "usw2"
+responsible_party = "thaotien6220052@gmail.com"
+owner             = "tien_nht"
+owner_email       = "thaotien6220052@gmail.com"
+instance_type     = "t3.nano"
+purpose           = "api-server"
