@@ -3,7 +3,6 @@ on:
   pull_request:
     branches: [master]
     types: [opened, synchronize, reopened]
-    paths-ignore: ['iac/**', '**/Jenkinsfile']
 jobs:
   app-ci:
     uses: proops2026-deploy-status-checker/proops2026-cicd-platform/.github/workflows/reusable-app-ci.yml@v1
