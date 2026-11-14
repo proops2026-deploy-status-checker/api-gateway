@@ -75,14 +75,14 @@
     storage.set(value);
     tokenInput.value = "";
     updateTokenUi();
-    route();
+    void route();
   });
 
   tokenClear.addEventListener("click", () => {
     token = null;
     storage.clear();
     updateTokenUi();
-    route();
+    void route();
   });
 
   // ---------- DOM helpers ----------
@@ -148,9 +148,21 @@
     }
   }
 
+  // Only these same-origin API paths may be requested; anything else built from the URL hash is refused.
+  const API_PATH = /^\/(?:overview|deploys(?:\/[0-9a-f-]{36}(?:\/logs)?)?)$/i;
+
+  function apiUrl(path) {
+    const url = new URL(path, window.location.origin);
+    if (url.origin !== window.location.origin || !API_PATH.test(url.pathname)) {
+      throw new ApiError(400, "Refusing to call an unexpected API path.");
+    }
+    return url.pathname + url.search;
+  }
+
   async function api(path) {
+    const target = apiUrl(path);
     if (!token) throw new ApiError(401, "Paste an access token (JWT) above to load data. Ask the platform team, or run scripts/issue-token.cjs in a lab.");
-    const response = await fetch(path, { headers: { authorization: `Bearer ${token}`, accept: "application/json" } });
+    const response = await fetch(target, { headers: { authorization: `Bearer ${token}`, accept: "application/json" } });
     let body = null;
     try {
       body = await response.json();
@@ -208,7 +220,7 @@
         return;
       }
       const byKey = new Map(items.map((d) => [`${d.service}|${d.environment}`, d]));
-      const services = [...new Set(items.map((d) => d.service))].sort();
+      const services = [...new Set(items.map((d) => d.service))].sort((a, b) => a.localeCompare(b));
       const failing = items.filter((d) => d.status === "FAILED").length;
 
       meta.textContent = `${services.length} services · ${failing} failing · refreshed ${new Date().toLocaleTimeString()}`;
@@ -234,7 +246,7 @@
 
     if (isCurrent(id)) {
       refreshTimer = setTimeout(() => {
-        if (isCurrent(id) && document.visibilityState === "visible") route();
+        if (isCurrent(id) && document.visibilityState === "visible") void route();
       }, OVERVIEW_REFRESH_MS);
     }
   }
@@ -427,10 +439,10 @@
     else await renderOverview(id);
   }
 
-  window.addEventListener("hashchange", route);
+  window.addEventListener("hashchange", () => void route());
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible" && !location.hash.startsWith("#/deploys") && !location.hash.startsWith("#/history")) route();
+    if (document.visibilityState === "visible" && !location.hash.startsWith("#/deploys") && !location.hash.startsWith("#/history")) void route();
   });
   updateTokenUi();
-  route();
+  void route();
 })();

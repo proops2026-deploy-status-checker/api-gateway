@@ -87,9 +87,18 @@ export function createApp(config: GatewayConfig) {
     return received.length === expected.length && timingSafeEqual(received, expected);
   }
 
+  // "Bearer <token>" parsed without a regex (no backtracking on attacker-controlled headers).
+  function bearerToken(authorization: string | undefined): string | undefined {
+    if (!authorization) return undefined;
+    const space = authorization.indexOf(" ");
+    if (space <= 0 || authorization.slice(0, space).toLowerCase() !== "bearer") return undefined;
+    const token = authorization.slice(space + 1).trim();
+    return token === "" ? undefined : token;
+  }
+
   // HS256 only, and the token must expire: a leaked token without `exp` would be valid forever.
   function hasValidJwt(authorization: string | undefined): boolean {
-    const token = authorization?.match(/^Bearer\s+(.+)$/i)?.[1];
+    const token = bearerToken(authorization);
     if (!token || !config.jwtSecret) return false;
     try {
       const payload = jwt.verify(token, config.jwtSecret, { algorithms: ["HS256"] });

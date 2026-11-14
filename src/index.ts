@@ -5,11 +5,22 @@ import { createApp } from "./app";
 const port = Number(process.env.PORT ?? 3000);
 const shutdownTimeoutMs = 10_000;
 
+// Upstream URLs have no built-in default: they come from the ConfigMap / .env file, and a
+// missing or malformed value stops the process at startup instead of failing per request.
+function requiredUrl(name: string): string {
+  const value = process.env[name];
+  if (!value || !URL.canParse(value)) {
+    console.error(`api-gateway: ${name} must be set to an absolute URL`);
+    process.exit(1);
+  }
+  return value;
+}
+
 const app = createApp({
   jwtSecret: process.env.JWT_SECRET,
   ciApiKey: process.env.CI_API_KEY,
-  deployServiceUrl: process.env.DEPLOY_SERVICE_URL ?? "http://deploy-service:3001",
-  logServiceUrl: process.env.LOG_SERVICE_URL ?? "http://log-service:3002"
+  deployServiceUrl: requiredUrl("DEPLOY_SERVICE_URL"),
+  logServiceUrl: requiredUrl("LOG_SERVICE_URL")
 });
 
 const server = app.listen(port, () => {
