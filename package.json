@@ -7,12 +7,14 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && npm run copy:static",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "lint": "eslint .",
-    "test": "npm run build && node --test test/gateway.integration.test.cjs",
-    "test:coverage": "tsc -p tsconfig.json --sourceMap && c8 --reporter=lcov --reporter=text --include=dist/** node --test test/gateway.integration.test.cjs"
+    "test": "npm run build && node --test test/*.test.cjs",
+    "test:coverage": "tsc -p tsconfig.json --sourceMap && npm run copy:static && c8 --reporter=lcov --reporter=text --include=dist/** --exclude=dist/public/** node --test test/*.test.cjs",
+    "copy:static": "node -e \"require('node:fs').cpSync('src/public','dist/public',{recursive:true})\"",
+    "issue-token": "node scripts/issue-token.cjs"
   },
   "dependencies": {
     "express": "^5.1.0",
