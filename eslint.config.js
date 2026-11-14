@@ -18,6 +18,14 @@ module.exports = tseslint.config(
     },
   },
   {
+    // Dashboard UI (DSC-06): plain browser script, served as-is.
+    files: ["src/public/**/*.js"],
+    languageOptions: {
+      sourceType: "script",
+      globals: { ...globals.browser },
+    },
+  },
+  {
     files: ["eslint.config.js", "**/*.cjs"],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
