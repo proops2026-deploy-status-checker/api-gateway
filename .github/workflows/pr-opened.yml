@@ -9,6 +9,7 @@ jobs:
     with:
       image-name: tert62/dsc-api-gateway
       image-tag: ${{ github.sha }}
+      platforms: linux/amd64,linux/arm64 # one tag for Intel + ARM nodes (minikube on Apple Silicon)
       test-script: test:coverage
       push-image: false # PR = build only; no registry secrets passed
     secrets:
