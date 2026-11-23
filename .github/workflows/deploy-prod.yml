@@ -1,0 +1,21 @@
+name: Deploy Production (manual)
+run-name: Deploy prod @ ${{ inputs.image-tag }} by ${{ github.actor }}
+# The manual "Run workflow" click IS the approval gate: a human picks the SHA to promote.
+# Same image as dev (built once by pr-merged.yml); only the environment and its secrets change.
+on:
+  workflow_dispatch:
+    inputs:
+      image-tag:
+        description: "Commit SHA to deploy to PRODUCTION (must have passed staging; an older SHA = rollback)"
+        type: string
+        required: true
+jobs:
+  deploy-prod:
+    uses: proops2026-deploy-status-checker/proops2026-cicd-platform/.github/workflows/reusable-deploy.yml@v2
+    with:
+      environment: prod
+      image-name: tert62/dsc-api-gateway
+      image-tag: ${{ inputs.image-tag }}
+      service-name: api-gateway
+      app-secret-keys: JWT_SECRET CI_API_KEY
+    secrets: inherit # env secrets resolve only inside the job that declares environment: prod
